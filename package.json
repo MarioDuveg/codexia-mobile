@@ -1,0 +1,16 @@
+{
+  "name": "codexia-mobile-challenge",
+  "version": "2.0.0",
+  "private": true,
+  "description": "CODEXIA: 5 retos de React Native con Expo Snack, 45 minutos y 100 puntos",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {}
+}
