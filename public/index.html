@@ -31,7 +31,7 @@
       <aside class="sidebar">
         <div class="sidebar-head"><div class="side-mini">IDENTIFICADOR // EQUIPO</div><div id="teamName" class="team-name">—</div><div class="team-active"><span class="pulse-dot"></span><span id="teamStatus">MISIÓN EN CURSO</span></div></div>
         <div class="sidebar-section"><span>PROGRESO / PROTOCOLO</span><strong id="progressText">00 / 05</strong></div>
-        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><div class="score-panel"><span>TU PUNTUACIÓN / 100</span><strong id="currentScore">00</strong><small id="syncStatus" aria-live="polite">Se enviará a Supabase al resolver retos.</small></div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><div class="score-panel"><span>PUNTUACIÓN ACTUAL / 100</span><strong id="currentScore">00</strong><small id="syncStatus" aria-live="polite">Se enviará a Supabase al resolver retos.</small></div>
         <nav class="level-list" id="levelList" aria-label="Retos de la misión"></nav>
         <div class="sidebar-bottom"><span>◇</span><p><strong>INTEL // 001</strong><br>No necesitas experiencia: edita las líneas indicadas y prueba tu app en Expo Snack.</p></div>
       </aside>
@@ -40,7 +40,7 @@
         <div class="challenge-toolbar"><div><span class="toolbar-kicker">CODEXIA / ESTACIÓN DE DESARROLLO</span><h2 id="challengePanelTitle">DESAFÍO ACTIVO</h2></div><div class="toolbar-right"><a id="openTab" href="#" target="_blank" rel="noopener">ABRIR EN PESTAÑA ↗</a><span class="toolbar-id" id="activeLevel">NIVEL 01 / 05</span></div></div>
         <div class="iframe-wrap" id="iframeWrap"><iframe id="challengeFrame" title="Minirreto activo de React Native" referrerpolicy="same-origin"></iframe></div>
         <div class="finish-card" id="finishCard" hidden>
-          <div class="finish-icon" id="finishIcon">✓</div><span class="finish-eyebrow" id="finishEyebrow">[ PROTOCOLO COMPLETADO // 05 / 05 ]</span><h2 id="finishTitle">ACCESO <span>CONCEDIDO.</span></h2><p id="finishDescription">Superaron todas las barreras. Su tiempo quedó registrado oficialmente:</p><div id="finalTime" class="final-time">00:00.00</div><div class="result-score">CALIFICACIÓN: <strong id="finalScore">—</strong><span> / 100</span></div><div class="place" id="finalPlace">RESULTADO REGISTRADO</div>
+          <div class="finish-icon" id="finishIcon">✓</div><span class="finish-eyebrow" id="finishEyebrow">[ PROTOCOLO COMPLETADO // 05 / 05 ]</span><h2 id="finishTitle">ACCESO <span>CONCEDIDO.</span></h2><p id="finishDescription">Superaron todas las barreras. Su tiempo quedó registrado oficialmente:</p><div id="finalTime" class="final-time">00:00.00</div><div class="result-score">CALIFICACIÓN: <strong id="finalScore">—</strong><span> / 100</span></div><div class="place" id="finalPlace">RESULTADO REGISTRADO</div><p class="finish-score-explainer" id="finishScoreExplainer">Puntuación ajustada según el tiempo de misión.</p>
           <section class="weakness-panel" id="matrixPanel" aria-labelledby="weaknessTitle">
             <span class="weakness-eyebrow">[ CINCO HABILIDADES DESBLOQUEADAS ]</span>
             <h3 id="weaknessTitle">YA CREAS <em>APPS MÓVILES.</em></h3>
@@ -52,7 +52,15 @@
               <li><span>04</span> ONPRESS · BOTONES</li>
               <li><span>05</span> USESTATE · ENERGÍA</li>
             </ul>
-          </section><p class="finish-foot" id="finishFoot">La mejor calificación del equipo se conserva en Supabase.</p><div class="finish-actions"><button class="button-outline" id="reviewBtn">REVISAR DESAFÍOS <span aria-hidden="true">›</span></button><button class="button-outline" id="retryBtn">REINTENTAR CON ESTE EQUIPO <span aria-hidden="true">↻</span></button><a class="button-outline" href="/resultados" target="_blank" rel="noopener">VER RESULTADOS ↗</a></div><p class="join-error" id="retryError" role="alert"></p>
+          </section>
+          <section class="secret-panel" id="secretPanel" aria-labelledby="secretTitle" hidden>
+            <span class="secret-panel-kicker">[ NIVEL FINAL // PROTOCOLO ULTRÓN ]</span>
+            <h3 id="secretTitle">DISPOSITIVO SECRETO DE <em>ULTRÓN</em></h3>
+            <p>Password para el dispositivo secreto de Ultrón:</p>
+            <div class="secret-password" id="secretPassword" aria-label="Password desbloqueada">••••</div>
+            <p class="secret-note">Clave desbloqueada por completar los cinco minirretos.</p>
+          </section>
+          <p class="finish-foot" id="finishFoot">La mejor calificación del equipo se conserva en Supabase.</p><div class="finish-actions"><button class="button-outline" id="reviewBtn">REVISAR DESAFÍOS <span aria-hidden="true">›</span></button><button class="button-outline" id="retryBtn">REINTENTAR CON ESTE EQUIPO <span aria-hidden="true">↻</span></button><a class="button-outline" href="/resultados" target="_blank" rel="noopener">VER RESULTADOS ↗</a></div><p class="join-error" id="retryError" role="alert"></p>
         </div>
         <footer class="panel-footer"><span>HERRAMIENTAS // REACT NATIVE · EXPO SNACK · JAVASCRIPT</span><span>CODEXIA / MOBILE LAB</span></footer>
       </section>
@@ -99,18 +107,19 @@
         <p class="welcome-copy">Cinco aplicaciones necesitan tus ideas. Modifica unas pocas líneas de React Native, pruébalas en Expo Snack y desbloquea puntos.</p>
         <div class="welcome-facts"><span><b>05</b><small>RETOS</small></span><span><b>45</b><small>MINUTOS MÁX.</small></span><span><b>100</b><small>PUNTOS MÁX.</small></span></div>
         <form id="joinForm" autocomplete="off"><label for="joinTeamNumber">IDENTIFICADOR // SELECCIONA TU EQUIPO (1–20)</label><div class="team-selector"><button type="button" id="teamMinus" class="team-step" aria-label="Equipo anterior">−</button><input id="joinTeamNumber" name="teamNumber" type="number" inputmode="numeric" min="1" max="20" step="1" placeholder="—" aria-describedby="teamSelectStatus" autocomplete="off"><button type="button" id="teamPlus" class="team-step" aria-label="Equipo siguiente">+</button></div><p class="team-select-status" id="teamSelectStatus">NINGÚN EQUIPO SELECCIONADO</p><button class="button-primary" type="submit" id="startBtn" disabled><span>START // INICIAR MISIÓN</span><span>›</span></button><p id="joinError" class="join-error" role="alert"></p></form>
-        <div class="welcome-disclaimer">ADVERTENCIA // SIN EQUIPO NO SE PUEDE INICIAR. AL PRESIONAR START COMIENZAN 45 MINUTOS SIN PAUSA. PUNTOS: 20 POR CADA RETO VALIDADO. TOTAL MÁXIMO: 100.</div>
+        <div class="welcome-disclaimer">ADVERTENCIA // SIN EQUIPO NO SE PUEDE INICIAR. AL PRESIONAR START COMIENZAN 45 MINUTOS SIN PAUSA. PUNTOS: CADA RETO ABRE UNA BANDA DE 20; LA RAPIDEZ DETERMINA LOS PUNTOS DENTRO DE ELLA. MÁXIMO: 100.</div>
       </div>
-      <section class="welcome-video mobile-hero" aria-labelledby="introVideoTitle">
-        <div class="art-top"><span id="introVideoTitle">CODEXIA // MOBILE LAB</span><span>EXPO ●</span></div>
-        <div class="mobile-hero-head"><span class="mobile-tag">REACT NATIVE</span><h2>DE CERO A<br><em>CREADOR.</em></h2><p>No tienes que saber programar.<br>Solo necesitas curiosidad.</p></div>
-        <div class="mock-phone" aria-label="Ilustración de una aplicación móvil creada con React Native">
-          <div class="mock-phone-top"><span>9:41</span><span>●●● ▰</span></div>
-          <div class="mock-app-content"><div class="mock-app-icon">⌘</div><span class="mock-caption">TU PRIMERA APP</span><strong>HOLA,<br><i>CODEXIA.</i></strong><p>Hecha con React Native</p><div class="mock-action">¡MISIÓN ACTIVADA! <span>↗</span></div></div>
-          <div class="mock-phone-bottom"></div>
+      <section class="welcome-video" aria-labelledby="introVideoTitle">
+        <div class="art-top"><span id="introVideoTitle">CODEXIA // TRANSMISIÓN MOBILE</span><span>ONLINE ●</span></div>
+        <div class="video-terminal">
+          <div class="video-terminal-heading"><span class="pulse-dot" aria-hidden="true"></span> MATERIAL DE INTRODUCCIÓN <span>VIDEO / 01</span></div>
+          <div class="video-screen">
+            <iframe id="introVideo" title="Video de introducción a CODEXIA Mobile Challenge" src="https://www.youtube-nocookie.com/embed/C-SqjLy7K6Q?rel=0" data-embed="https://www.youtube-nocookie.com/embed/C-SqjLy7K6Q?rel=0" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          </div>
+          <p class="video-terminal-note">TRANSMISIÓN EXTERNA // REQUIERE CONEXIÓN A INTERNET</p>
+          <a class="video-external" href="https://youtu.be/C-SqjLy7K6Q" target="_blank" rel="noopener noreferrer">VER DIRECTAMENTE EN YOUTUBE ↗</a>
         </div>
-        <div class="mobile-hero-footer"><span>5 RETOS</span><span>×</span><span>20 PUNTOS</span><span>=</span><strong>100 TOTAL</strong></div>
-        <div class="art-bottom"><span>EXPO SNACK READY</span><strong>BUILD <i>_</i></strong></div>
+        <div class="art-bottom"><span>REACT NATIVE / EXPO SNACK</span><strong>READY <i>_</i></strong></div>
         <div class="art-corner one" aria-hidden="true"></div><div class="art-corner two" aria-hidden="true"></div>
       </section>
     </section>

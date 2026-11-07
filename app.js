@@ -200,12 +200,19 @@ function htmlEsc(value) {
 }
 function endedAt(t) { return t.completedAt || t.expiredAt || null; }
 function elapsed(t, now = Date.now()) { return Math.max(0, Math.min(MAX_MISSION_MS, (endedAt(t) || now) - t.startedAt)); }
-function scoreFromProgress(solvedCount) {
-  // Cada minirreto vale 20 puntos. Sin bonos por rapidez, nunca más de 100.
-  return Math.max(0, Math.min(100, Math.trunc(solvedCount) * 20));
+function scoreFromProgress(solvedCount, ms) {
+  // Misma mecánica que CODEXIA Cybersecurity: cada reto desbloquea una banda
+  // de 20 puntos (1-20, 21-40, ..., 81-100). Cuanto más se tarda, menor es
+  // el bono de rapidez dentro de la banda. Sin retos: 0 puntos.
+  if (solvedCount <= 0) return 0;
+  const elapsedMs = Math.min(MAX_MISSION_MS, Math.max(0, ms));
+  const speedBonus = Math.round(19 * (1 - elapsedMs / MAX_MISSION_MS));
+  return Math.min(100, (solvedCount - 1) * 20 + 1 + speedBonus);
 }
 function scoreForTeam(t) {
-  return scoreFromProgress(t.solved.length);
+  const count = t.solved.length;
+  const lastSolvedAt = count ? t.solved[count - 1] : (endedAt(t) || Date.now());
+  return scoreFromProgress(count, lastSolvedAt - t.startedAt);
 }
 // Solo se escribe scores.taller_3; se respetan las otras columnas.
 // Peticiones equivalentes a supabase.from('scores').update({taller_3: puntos}).eq('equipo', n),
@@ -351,6 +358,9 @@ app.get('/api/state', (req, res) => {
     syncError: team.syncError || null,
     pointsPerLevel: 20,
     maxScore: 100,
+    speedPenalty: true,
+    // No revelar la clave en páginas públicas ni a equipos incompletos.
+    secretPassword: team.completedAt && !team.expiredAt ? '1122' : null,
     rank,
   });
 });

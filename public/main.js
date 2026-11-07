@@ -114,7 +114,7 @@ function renderState(data) {
   $('.timer-box').classList.toggle('timer-finished', Boolean(data.ended));
   $('#currentScore').textContent = String(data.score).padStart(2, '0');
   $('#syncStatus').textContent = !data.solved.length
-    ? data.ended ? 'Sin puntos obtenidos en este intento.' : 'Gana 20 puntos por cada minirreto validado.'
+    ? data.ended ? 'Sin puntos obtenidos en este intento.' : 'Cada reto desbloquea hasta 20 puntos; el tiempo afecta la nota.'
     : data.syncedScore >= data.score
       ? 'Puntuación registrada en Supabase.'
       : data.syncError ? 'Guardado localmente; reintentando envío a Supabase.' : 'Enviando puntuación a Supabase...';
@@ -125,9 +125,18 @@ function renderState(data) {
     $('#finishIcon').textContent = data.expiredAt ? '⌛' : '✓';
     $('#finishEyebrow').textContent = data.expiredAt ? `[ TIEMPO AGOTADO // ${progress} / 05 RETOS ]` : '[ PROTOCOLO COMPLETADO // 05 / 05 ]';
     $('#finishTitle').textContent = data.expiredAt ? 'TIEMPO AGOTADO.' : '¡APP MASTER!';
-    $('#finishDescription').textContent = data.expiredAt ? 'Finalizaron los 45 minutos. Cada reto validado suma 20 puntos:' : 'Completaron las cinco aplicaciones de React Native. ¡Obtuvieron 100 puntos!';
-    $('#finalPlace').textContent = `EQUIPO ${data.teamNumber} // ${progress} DE 5 RETOS · 20 PTS CADA UNO`;
+    $('#finishDescription').textContent = data.expiredAt
+      ? 'Finalizaron los 45 minutos. La puntuación depende de los retos aprobados y del tiempo del último reto validado:'
+      : '¡Completaron las cinco aplicaciones! Su calificación final considera también el tiempo utilizado:';
+    $('#finalPlace').textContent = `EQUIPO ${data.teamNumber} // ${progress} DE 5 RETOS`;
+    const basePoints = progress ? (progress - 1) * 20 + 1 : 0;
+    const timeBonus = data.score - basePoints;
+    $('#finishScoreExplainer').textContent = progress
+      ? `BASE: ${basePoints} PTS · BONO POR RAPIDEZ: ${timeBonus} / 19 PTS` 
+      : 'SIN RETOS APROBADOS · 0 PUNTOS';
     $('#matrixPanel').hidden = Boolean(data.expiredAt);
+    $('#secretPanel').hidden = !Boolean(data.completedAt && data.secretPassword);
+    $('#secretPassword').textContent = data.completedAt && data.secretPassword ? data.secretPassword : '';
     $('#reviewBtn').hidden = Boolean(data.expiredAt);
     $('#finishFoot').textContent = data.score === 0 ? 'No hubo puntos que registrar en Supabase.' : data.syncedScore >= data.score ? 'Resultado enviado. Supabase conserva siempre la mejor calificación de este equipo.' : 'Resultado guardado localmente. El sistema seguirá intentando enviarlo a Supabase.';
     if (!wasEnded || $('#finishCard').hidden === false) showFinish();

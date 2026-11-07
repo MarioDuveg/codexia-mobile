@@ -18,22 +18,23 @@ Rutas:
 
 - `/` — portada de alumnos, cinco retos y clasificación emergente.
 - `/admin` — panel del docente. Si no fijas `ADMIN_PASSWORD`, la contraseña temporal se imprime en la terminal al iniciar.
-- `/resultados` o `/scores` — clasificación pública en pantalla completa.
+- `/resultados` — tabla de resultados totales con la estética del proyecto Cybersecurity (Taller 1–4, Batalla Final y Total).
+- `/scores` — clasificación interactiva por actividad en pantalla completa; también disponible desde la portada.
 - `extras/resultados_externa.html` — visor externo de resultados que consulta Supabase directamente; se puede publicar de forma estática.
 
 ## Los cinco retos
 
-| Nivel | Reto | Cambio que hacen | Tiempo sugerido | Puntos |
+| Nivel | Reto | Cambio que hacen | Tiempo sugerido | Banda acumulada |
 |---|---|---|---:|---:|
-| 1 | ¡Hola, CODEXIA! | Cambiar los dos mensajes `Text` para mostrar el saludo y su número de equipo | 6 min | 20 |
-| 2 | Cambia el skin | Editar `backgroundColor`, `color` y `fontSize` | 7 min | 20 |
-| 3 | Crea tu avatar | Personalizar las constantes `avatar`, `nombre` y `poder` | 7 min | 20 |
-| 4 | El botón mágico | Cambiar el mensaje emitido por `setMensaje` en `onPress` | 8 min | 20 |
-| 5 | Contador de energía | Modificar el incremento de `setEnergia` de 1 a 5 | 9 min | 20 |
+| 1 | ¡Hola, CODEXIA! | Cambiar los dos mensajes `Text` para mostrar el saludo y su número de equipo | 6 min | 1–20 |
+| 2 | Cambia el skin | Editar `backgroundColor`, `color` y `fontSize` | 7 min | 21–40 |
+| 3 | Crea tu avatar | Personalizar las constantes `avatar`, `nombre` y `poder` | 7 min | 41–60 |
+| 4 | El botón mágico | Cambiar el mensaje emitido por `setMensaje` en `onPress` | 8 min | 61–80 |
+| 5 | Contador de energía | Modificar el incremento de `setEnergia` de 1 a 5 | 9 min | 81–100 |
 
 **Agenda sugerida (45 min):** introducción 5 min + retos 6 + 7 + 7 + 8 + 9 min + cierre 3 min.
 
-**Puntuación EXACTA:** 0, 20, 40, 60, 80 o 100, según los retos validados. **No hay puntos por rapidez ni penalización por pistas.** El cronómetro del servidor vence a los 45 minutos. El mejor resultado de cada equipo se conserva cuando Supabase está configurado y operativo.
+**Puntuación con penalización por tiempo (como Cybersecurity):** 5 bandas progresivas de 20 puntos (1–20, 21–40, 41–60, 61–80, 81–100), según retos validados. Dentro de cada banda la rapidez decide la nota. Sin retos = 0. Los puntos de cada reto ya no son fijos; el máximo absoluto es 100. **No hay penalización por pistas.** El cronómetro del servidor vence a los 45 minutos. La fórmula usa el tiempo desde START hasta el **último** reto validado: `score = (retos - 1) * 20 + 1 + round(19 * (1 - min(tiempo, 45min)/45min))`. Ejemplo: cinco retos completados al inicio, 100 puntos; completados justo antes de los 45 minutos, aprox. 81 puntos. El mejor resultado de cada equipo se conserva cuando Supabase está configurado y operativo.
 
 ## Flujo de trabajo del alumno
 
@@ -41,7 +42,7 @@ Rutas:
 2. Leer la consigna. Se muestra un `App.js` con código de React Native listo para editar en la misma página.
 3. Hacer uno, dos o tres cambios pequeños. Pueden usar hasta **tres pistas**.
 4. Presionar **PROBAR MI APP EN EXPO SNACK**. Se abre una pestaña de Expo Snack con **el código tal como está en el editor**, transmitido mediante el parámetro `code` de su URL, con vista previa en `web`. **No es necesario crear y publicar manualmente cinco proyectos Snack.**
-5. Regresar a CODEXIA y pulsar **VALIDAR MI CÓDIGO**. El servidor comprueba el cambio requerido. Si es correcto, otorga 20 puntos y desbloquea el siguiente nivel.
+5. Regresar a CODEXIA y pulsar **VALIDAR MI CÓDIGO**. El servidor comprueba el cambio requerido. Si es correcto, desbloquea el siguiente nivel y recalcula la nota según la banda alcanzada y la rapidez.
 
 **Importante:** la validación es una *comprobación didáctica de fragmentos específicos del código*; **no compila ni ejecuta JSX en el servidor**. Un código que pasa la validación puede contener errores en otras partes. Por eso el alumno debe verificar visualmente el resultado y la interacción en Expo Snack. No es un sistema de evaluación antifraude ni supervisa que el alumno haya abierto efectivamente la pestaña.
 
@@ -51,7 +52,7 @@ Los cambios en el editor se guardan temporalmente en `sessionStorage` del navega
 
 La actividad escribe únicamente la **columna `taller_3`** de la tabla `public.scores`, identificada por el número del equipo (`equipo` de 1 a 20). Se utiliza la misma URL y clave publicable que traía el proyecto original, salvo que se cambien con variables de entorno.
 
-- Por cada reto validado se publica **20, 40, 60, 80 o 100**; no se publican ceros.
+- Por cada reto validado se publica **la puntuación ajustada según el tiempo (máximo 100)**; no se publican ceros.
 - El servidor actualiza `taller_3` con una petición REST equivalente a `supabase.from('scores').update({taller_3: puntos}).eq('equipo', equipo)`. Incluye el filtro adicional `taller_3=lt.puntos` para **no reducir** una nota alta ya guardada, incluso si el equipo reinicia.
 - Si la fila del equipo no existe, intenta crearla con `equipo` y `taller_3`, dejando las otras columnas con sus valores predeterminados.
 - El ranking muestra **TALLER 3 · MOBILE**, mientras que **BATALLA FINAL** es una categoría independiente. La columna `total` la calcula Supabase según tu esquema y no se escribe manualmente.
@@ -89,7 +90,7 @@ Para pruebas automáticas, sin afectar la base de datos real:
 npm test
 ```
 
-Los tests levantan un servidor simulado de Supabase, validan los cinco retos, controlan el límite de 45 minutos, los reintentos y que el puntaje jamás pase de 100.
+Los tests levantan un servidor simulado de Supabase, validan los cinco retos, controlan el límite de 45 minutos, los reintentos y que el puntaje jamás pase de 100, y que la penalización por tiempo se aplique.
 
 ## Archivos principales
 
@@ -103,3 +104,10 @@ Los tests levantan un servidor simulado de Supabase, validan los cinco retos, co
 ## Copias de respaldo de los ejercicios
 
 La carpeta `snacks/` incluye los cinco archivos `App.js` iniciales por separado. Son útiles si necesitas repartir códigos en el aula o si la red escolar bloquea los enlaces precargados. Para usarlos, abre `https://snack.expo.dev/` y reemplaza el contenido de `App.js` por el código correspondiente.
+
+## Video, resultados y contraseña final
+
+- La portada incluye el video de introducción [YouTube C-SqjLy7K6Q](https://youtu.be/C-SqjLy7K6Q) incrustado con `youtube-nocookie` y enlace alternativo. Si el navegador o la red escolar impiden reproducirlo incrustado, abre el enlace directo.
+- `/resultados` copia la **tabla global de Cybersecurity**: puesto, equipo, Taller 1, Taller 2, Taller 3, Taller 4, Batalla Final y Total, con actualización cada 10 segundos. `/scores` y el menú SCORES mantienen la clasificación interactiva por actividad.
+- **Solo después de validar los cinco retos** se revela en la pantalla final `Password para el dispositivo secreto de Ultrón: 1122`. No aparece si vence el tiempo sin completar los cinco retos. La clave se entrega desde `/api/state` únicamente a la sesión que completó la misión.
+- No requiere SQL adicional: sigue actualizando **solo `scores.taller_3`**, sin modificar las columnas de otros talleres.

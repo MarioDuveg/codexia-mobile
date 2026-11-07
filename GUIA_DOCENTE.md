@@ -28,7 +28,7 @@ Los estudiantes no deben escribir componentes desde cero ni instalar librerías;
 
 ## Puntuación y ayuda
 
-Cada reto validado suma **20 puntos exactos**. Cinco retos = **100 puntos máximos**; cuatro = 80; tres = 60; dos = 40; uno = 20; cero = 0. No hay bonificaciones por velocidad. Las tres pistas por reto son gratuitas. Si alguien se atasca, muéstrale cómo localizar la palabra del ejemplo y cambiarla sin borrar las llaves, comillas o etiquetas.
+La nota incluye **penalización por tiempo**, igual que en CODEXIA Cybersecurity: cada reto desbloquea una banda de 20 puntos (1–20, 21–40, 41–60, 61–80, 81–100), pero el valor dentro de la banda baja conforme transcurren los 45 minutos. Ejemplo: cinco retos inmediatamente, 100; cinco en el último minuto, aproximadamente 81. Cero retos = 0. **Máximo general: 100 puntos.** Las tres pistas por reto son gratuitas. Si alguien se atasca, muéstrale cómo localizar la palabra del ejemplo y cambiarla sin borrar las llaves, comillas o etiquetas.
 
 **Validación:** el servidor compara el código con los requisitos de cada minirreto, pero NO interpreta ni ejecuta JSX. Es importante pedir al alumno abrir Snack y comprobar la aplicación. El enlace de Snack se crea dinámicamente desde el editor actual: si cambian más código después de abrirlo, deben volver a pulsar el botón para enviar esos cambios a otra pestaña de Snack.
 
@@ -36,7 +36,7 @@ Cada reto validado suma **20 puntos exactos**. Cinco retos = **100 puntos máxim
 
 Antes de empezar el taller, inicia `npm start` en una máquina conectada a la misma red Wi-Fi de los alumnos. Abre CODEXIA y Expo Snack en un navegador de prueba. Comprueba que la vista previa web de Snack puede ejecutarse en la red escolar: algunas redes bloquean dominios de desarrollo. Los alumnos pueden usar computadora portátil; no es indispensable instalar Expo Go ni usar un teléfono físico.
 
-**Supabase:** CODEXIA Mobile Challenge utiliza la tabla `scores`, columna **`taller_3`** del Equipo 1 al 20. Cada minirreto validado añade 20 puntos hasta 100. Los otros talleres y `batalla_final` permanecen intactos. Si existe una nota previa de Taller 3 más alta, no disminuye; antes de una nueva competencia revisa esos puntajes históricos. Los tests locales NO escriben en la base real. Los resultados locales también quedan en `data/equipos.json`. Si no se han creado las filas, la app intentará crearlas; para ello la RLS debe permitir INSERT además de SELECT y UPDATE.
+**Supabase:** CODEXIA Mobile Challenge utiliza la tabla `scores`, columna **`taller_3`** del Equipo 1 al 20. Cada minirreto validado desbloquea una banda de puntos, con penalización por tiempo, sin superar 100. Los otros talleres y `batalla_final` permanecen intactos. Si existe una nota previa de Taller 3 más alta, no disminuye; antes de una nueva competencia revisa esos puntajes históricos. Los tests locales NO escriben en la base real. Los resultados locales también quedan en `data/equipos.json`. Si no se han creado las filas, la app intentará crearlas; para ello la RLS debe permitir INSERT además de SELECT y UPDATE.
 
 ## Direcciones útiles
 
@@ -45,3 +45,9 @@ Antes de empezar el taller, inicia `npm start` en una máquina conectada a la mi
 - Clasificación: `http://IP_DEL_SERVIDOR:3011/resultados`
 
 Para cambiar textos, códigos iniciales o las reglas de comprobación, edita `mobile-levels.js`.
+
+## Material de presentación y misión final
+
+- La portada incluye el video proporcionado: https://youtu.be/C-SqjLy7K6Q. Muéstralo **antes** de presionar START; al iniciar se detiene el video.
+- La tabla de `/resultados` conserva la apariencia de Cybersecurity y muestra las notas globales por columna. El menú SCORES continúa disponible para comparar actividades.
+- **Al completar los cinco retos** aparece **Password para el dispositivo secreto de Ultrón: 1122**. Se oculta cuando expira la misión sin completar todos los niveles. No uses esa clave como credencial real de seguridad.

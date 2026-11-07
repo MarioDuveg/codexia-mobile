@@ -319,3 +319,16 @@ h1 em{color:var(--red);font-style:normal;text-shadow:0 0 24px #ff16383e}
 .learned-grid li span{color:#ff5b82;margin-right:8px}
 @media(max-width:800px){.mobile-hero{min-height:500px;padding:65px 13px 65px}}
 @media(max-width:540px){.mobile-hero{min-height:490px}.learned-grid{grid-template-columns:1fr}}
+
+/* Pantalla final: puntuación con tiempo y contraseña final (solo con cinco retos). */
+.finish-score-explainer{font:700 12px/1.6 var(--mono);letter-spacing:.45px;color:#e9b2c1;margin:0 auto 23px;padding:0 12px}
+.secret-panel{width:min(100%,640px);margin:0 0 24px;padding:23px 22px;background:linear-gradient(130deg,#191125,#08080d 80%);border:1px solid #9960ad;box-shadow:inset 3px 0 #d380f1,0 0 35px #68219630;text-align:left}
+.secret-panel-kicker{color:#dca7f6;font:10px var(--mono);letter-spacing:1px}
+.secret-panel h3{margin:12px 0 11px;font:800 clamp(18px,2.3vw,25px)/1.3 var(--head);color:#fff}
+.secret-panel h3 em{font-style:normal;color:#e6a1ff}
+.secret-panel>p{font:16px/1.35 var(--body);color:#d9cfe0;margin:0 0 13px}
+.secret-password{font:800 clamp(30px,5vw,52px) var(--head);text-align:center;letter-spacing:10px;background:#130d1b;border:1px dashed #c685eb;color:#fff;padding:16px 12px;box-shadow:inset 0 0 25px #7d339b22}
+.secret-panel .secret-note{margin:13px 0 0;color:#a69cb3;font:11px var(--mono);line-height:1.5}
+/* El resultado final usa el mismo estilo de tabla de Cybersecurity; destacar Taller 3. */
+.score-table th:nth-child(5),.score-table td:nth-child(5){color:#ff9bb8}
+.score-table td:nth-child(5){font-weight:800}

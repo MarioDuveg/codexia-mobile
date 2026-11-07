@@ -107,7 +107,7 @@ function solution(level, teamNumber) {
 }
 
 // Esta prueba usa un falso servidor de Supabase; nunca escribe en la base real.
-test('Equipo obligatorio, 45 min, hasta 100 en taller_3 sin alterar otras columnas', async () => {
+test('Taller 3: penalización temporal, clave final, video y tabla global sin alterar otras columnas', async () => {
   await new Promise(resolve => mockSupabase.listen(0, '127.0.0.1', resolve));
   process.env.SUPABASE_URL = `http://127.0.0.1:${mockSupabase.address().port}/rest/v1/`;
   process.env.SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_test_only';
@@ -132,6 +132,10 @@ test('Equipo obligatorio, 45 min, hasta 100 en taller_3 sin alterar otras column
     assert.match(html, /id="scoresOpenBtn"/);
     assert.match(html, /id="scoresOverlay"/);
     assert.match(html, /id="scoresFilters"/);
+    assert.match(html, /youtube-nocookie\.com\/embed\/C-SqjLy7K6Q/);
+    assert.match(html, /https:\/\/youtu\.be\/C-SqjLy7K6Q/);
+    assert.match(html, /id="secretPanel"/);
+    assert.doesNotMatch(html, />1122</);
     assert.equal((await a('/api/state')).data.started, false);
     for (const teamNumber of [undefined, null, '', 0, 21, 2.5, 'abc', '99']) {
       assert.equal((await a('/api/start', {teamNumber})).status, 400);
@@ -142,6 +146,7 @@ test('Equipo obligatorio, 45 min, hasta 100 en taller_3 sin alterar otras column
     assert.equal((await a('/api/state')).data.name, 'Equipo 3');
     assert.equal((await a('/api/state')).data.maxDurationMs, 2700000);
     assert.equal((await a('/api/state')).data.score, 0);
+    assert.equal((await a('/api/state')).data.secretPassword, null);
     assert.equal((await a('/api/start', {teamNumber:4})).data.alreadyStarted, true);
     assert.equal((await a('/reto/5')).status, 403);
     assert.equal((await a('/api/answer', {level:1, code:'incorrecto'})).status, 400);
@@ -160,6 +165,7 @@ test('Equipo obligatorio, 45 min, hasta 100 en taller_3 sin alterar otras column
     assert.ok(completed.completedAt);
     assert.equal(completed.expiredAt, null);
     assert.equal(completed.score, 100);
+    assert.equal(completed.secretPassword, '1122', 'La clave solo aparece tras completar los 5 retos');
     await waitFor(() => remoteScores.get(3)?.taller_3 === 100, 'No se publicó calificación final');
     assert.equal((await a('/api/answer', {level:5, code:solution(5,3)})).status, 409);
     assert.equal((await a('/api/retry', {})).status, 201);
@@ -167,6 +173,7 @@ test('Equipo obligatorio, 45 min, hasta 100 en taller_3 sin alterar otras column
     assert.equal(retryState.name, 'Equipo 3');
     assert.equal(retryState.solved.length, 0);
     assert.equal(retryState.ended, false);
+    assert.equal(retryState.secretPassword, null, 'La clave se oculta al reintentar');
     assert.equal((await a('/api/retry', {})).status, 409);
     assert.equal((await a('/api/answer', {level:1, code:solution(1,3)})).status, 200);
     await waitFor(() => calls.some(r => r.type === "update" && r.equipo === 3 && r.score === 20), 'No se reenvió calificación inferior');
@@ -178,7 +185,8 @@ test('Equipo obligatorio, 45 min, hasta 100 en taller_3 sin alterar otras column
     assert.equal(expired.ended, true);
     assert.ok(expired.expiredAt);
     assert.equal(expired.elapsedMs, 2700000);
-    assert.equal(expired.score, 20); // Se calcula con el instante del último reto resuelto.
+    assert.equal(expired.score, 20); // Se fija usando el instante del último reto resuelto.
+    assert.equal(expired.secretPassword, null);
     assert.equal((await a('/api/answer', {level:2, code:solution(2,3)})).status, 409);
     Date.now = originalNow;
     assert.equal(remoteScores.get(3).taller_3, 100);
@@ -189,9 +197,10 @@ test('Equipo obligatorio, 45 min, hasta 100 en taller_3 sin alterar otras column
     Date.now = () => slowerBase + 44 * 60000 + 59 * 1000;
     const slower = await b('/api/answer', {level:5, code:solution(5,4)});
     assert.equal(slower.status, 200);
-    assert.equal(slower.data.score, 100); // Sin bono ni penalización por tiempo.
+    assert.equal(slower.data.score, 81); // Cinco retos casi al minuto 45: banda 81-100, sin bono.
+    assert.equal((await b('/api/state')).data.secretPassword, '1122');
     Date.now = originalNow;
-    await waitFor(() => remoteScores.get(4)?.taller_3 === 100, 'No se publicó el score completo');
+    await waitFor(() => remoteScores.get(4)?.taller_3 === 81, 'No se publicó el score temporal de 81');
 
     assert.equal((await c('/api/start', {teamNumber:20})).status, 201);
     const blankStarted = originalNow();
@@ -199,6 +208,7 @@ test('Equipo obligatorio, 45 min, hasta 100 en taller_3 sin alterar otras column
     const blankExpired = (await c('/api/state')).data;
     assert.equal(blankExpired.score, 0);
     assert.ok(blankExpired.expiredAt);
+    assert.equal(blankExpired.secretPassword, null);
     assert.equal((await c('/reto/1')).status, 410);
     Date.now = originalNow;
     assert.equal(remoteScores.has(20), false, 'No se publica puntuación cero a Supabase');
@@ -207,10 +217,13 @@ test('Equipo obligatorio, 45 min, hasta 100 en taller_3 sin alterar otras column
     const publicPage = await fetch(host + '/resultados');
     assert.equal(publicPage.status, 200);
     const publicMarkup = await publicPage.text();
-    assert.match(publicMarkup, /MOBILE CHALLENGE/);
-    assert.match(publicMarkup, /CLASIFICACIÓN ACTUAL/);
-    assert.match(publicMarkup, /id="scoresFilters"/);
-    assert.match(publicMarkup, /\/public\/scores\.js/);
+    assert.match(publicMarkup, /Mobile Challenge/);
+    assert.match(publicMarkup, /CLASIFICACIÓN FINAL/);
+    assert.match(publicMarkup, /id="resultRows"/);
+    assert.match(publicMarkup, /TALLER 3/);
+    assert.match(publicMarkup, /BATALLA FINAL/);
+    assert.match(publicMarkup, /\/public\/resultados\.js/);
+    assert.equal((await fetch(host + '/public/resultados.js')).status, 200);
     const scorePage = await fetch(host + '/scores');
     assert.equal(scorePage.status, 200);
     assert.match(await scorePage.text(), /SCORES/);
@@ -224,6 +237,7 @@ test('Equipo obligatorio, 45 min, hasta 100 en taller_3 sin alterar otras column
     assert.equal(ranking.status, 200);
     assert.deepEqual(ranking.data.scores.map(x=>x.equipo), [3,4]);
     assert.equal(ranking.data.scores[0].taller_3, 100);
+    assert.equal(ranking.data.scores[1].taller_3, 81);
     assert.equal(ranking.data.scores[0].batalla_final, 78, 'No alterar Batalla Final');
     assert.equal(ranking.data.scores[0].taller_1, 12, 'No alterar Taller 1');
     assert.equal(ranking.data.scores[0].taller_2, 34, 'No alterar Taller 2');
